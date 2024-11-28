@@ -52,7 +52,7 @@ module noc1encoder(
    input wire [63:0] noc1buffer_noc1encoder_req_data_1,
    input wire noc1buffer_noc1encoder_req_val,
    input wire [`L15_NOC1_REQTYPE_WIDTH-1:0] noc1buffer_noc1encoder_req_type,
-   input wire [`L15_MSHR_ID_WIDTH-1:0] noc1buffer_noc1encoder_req_mshrid,
+   input wire [`L15_MSHR_TYPE_WIDTH-1:0] noc1buffer_noc1encoder_req_mshr_type,
    input wire [`L15_THREADID_MASK] noc1buffer_noc1encoder_req_threadid,
    input wire [39:0] noc1buffer_noc1encoder_req_address,
    input wire noc1buffer_noc1encoder_req_non_cacheable,
@@ -84,7 +84,7 @@ module noc1encoder(
    // csm interface
    input wire csm_noc1encoder_req_val,
    input wire [`L15_NOC1_REQTYPE_WIDTH-1:0] csm_noc1encoder_req_type,
-   input wire [`L15_CSM_NUM_TICKETS_LOG2-1:0] csm_noc1encoder_req_mshrid,
+   input wire [`L15_CSM_NUM_TICKETS_LOG2-1:0] csm_noc1encoder_req_mshr_type,
    input wire [`PHY_ADDR_WIDTH-1:0] csm_noc1encoder_req_address,
    input wire csm_noc1encoder_req_non_cacheable,
    input wire  [`PCX_SIZE_WIDTH-1:0] csm_noc1encoder_req_size,
@@ -137,7 +137,7 @@ reg req_nc;
 reg [63:0] req_data0;
 reg [63:0] req_data1;
 reg [39:0] req_address;
-reg [`MSG_MSHRID_WIDTH-1:0] req_mshrid;
+reg [`MSG_MSHRID_WIDTH-1:0] req_mshr_type;
 reg [`PCX_SIZE_WIDTH-1:0] req_size;
 reg [`NOC_X_WIDTH-1:0] req_dest_l2_xpos;
 reg [`NOC_Y_WIDTH-1:0] req_dest_l2_ypos;
@@ -163,7 +163,7 @@ begin
    req_data0 = 0;
    req_data1 = 0;
    req_address = 0;
-   req_mshrid = 0;
+   req_mshr_type = 0;
    req_size = 0;
    req_dest_l2_xpos = 0;
    req_dest_l2_ypos = 0;
@@ -195,7 +195,7 @@ begin
       req_data0 = noc1buffer_noc1encoder_req_data_0;
       req_data1 = noc1buffer_noc1encoder_req_data_1;
       req_address = noc1buffer_noc1encoder_req_address;
-      req_mshrid = {noc1buffer_noc1encoder_req_threadid,noc1buffer_noc1encoder_req_mshrid};
+      req_mshr_type = {noc1buffer_noc1encoder_req_threadid,noc1buffer_noc1encoder_req_mshr_type};
       req_size = noc1buffer_noc1encoder_req_size;
       req_dest_l2_xpos = noc1buffer_noc1encoder_req_homeid[`PACKET_HOME_ID_X_MASK];
       req_dest_l2_ypos = noc1buffer_noc1encoder_req_homeid[`PACKET_HOME_ID_Y_MASK];
@@ -213,15 +213,15 @@ begin
       req_nc = csm_noc1encoder_req_non_cacheable;
       req_address = csm_noc1encoder_req_address;
       req_size = csm_noc1encoder_req_size;
-      req_mshrid = csm_noc1encoder_req_mshrid;
+      req_mshr_type = csm_noc1encoder_req_mshr_type;
 
       // send to home l2
       req_dest_l2_xpos = coreid_x;
       req_dest_l2_ypos = coreid_y;
       req_dest_chipid = chipid;
 
-      // csm mshrid has the most significant bit set
-      req_mshrid = req_mshrid | {1'b1, {`MSG_MSHRID_WIDTH-1{1'b0}}};
+      // csm mshr_type has the most significant bit set
+      req_mshr_type = req_mshr_type | {1'b1, {`MSG_MSHRID_WIDTH-1{1'b0}}};
    end
 
 
@@ -243,7 +243,7 @@ reg [`NOC_CHIPID_WIDTH-1:0]            msg_src_chipid;
 reg [`NOC_FBITS_WIDTH-1:0]             msg_src_fbits;
 reg [`MSG_LENGTH_WIDTH-1:0]            msg_length;
 reg [`MSG_TYPE_WIDTH-1:0]              msg_type;
-reg [`MSG_MSHRID_WIDTH-1:0]            msg_mshrid;
+reg [`MSG_MSHRID_WIDTH-1:0]            msg_mshr_type;
 reg [`MSG_MESI_BITS-1:0]               msg_mesi;
 reg [`MSG_LAST_SUBLINE_WIDTH-1:0]      msg_last_subline;
 reg [`MSG_OPTIONS_1]                   msg_options_1;
@@ -265,7 +265,7 @@ begin
    t1_interrupt_cpuid = 0;
 
    msg_address = req_address;
-   msg_mshrid = req_mshrid;
+   msg_mshr_type = req_mshr_type;
    msg_data_size = req_size;
 
    // source are static
@@ -454,7 +454,7 @@ begin
       flit[`MSG_DST_FBITS] = msg_dest_fbits;
       flit[`MSG_LENGTH] = msg_length;
       flit[`MSG_TYPE] = msg_type;
-      flit[`MSG_MSHRID] = msg_mshrid;
+      flit[`MSG_MSHRID] = msg_mshr_type;
       flit[`MSG_OPTIONS_1] = msg_options_1;
    end
    else if (flit_state == `NOC1_REQ_HEADER_2)
@@ -555,7 +555,7 @@ begin
          req_type == `L15_NOC1_REQTYPE_AMO_MINU_REQUEST)
       begin
          l15_dmbr_l1missIn = 1'b1;
-         l15_dmbr_l1missTag = msg_mshrid[`DMBR_TAG_WIDTH-1:0]; // TODO: might be wrong please contact Tri
+         l15_dmbr_l1missTag = msg_mshr_type[`DMBR_TAG_WIDTH-1:0]; // TODO: might be wrong please contact Tri
       end
    end
 end

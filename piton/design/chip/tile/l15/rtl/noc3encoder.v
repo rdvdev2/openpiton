@@ -51,7 +51,7 @@ module noc3encoder(
     input wire [`L15_NOC3_REQTYPE_WIDTH-1:0] l15_noc3encoder_req_type,
     input wire [63:0] l15_noc3encoder_req_data_0,
     input wire [63:0] l15_noc3encoder_req_data_1,
-    input wire [`L15_MSHR_ID_WIDTH-1:0] l15_noc3encoder_req_mshrid,
+    input wire [`L15_MSHR_TYPE_WIDTH-1:0] l15_noc3encoder_req_mshr_type,
     input wire [`L15_THREADID_MASK] l15_noc3encoder_req_threadid,
     input wire [1:0] l15_noc3encoder_req_sequenceid,
     input wire [39:0] l15_noc3encoder_req_address,
@@ -88,7 +88,7 @@ reg [`NOC_CHIPID_WIDTH-1:0] src_chipid;
 reg [`NOC_FBITS_WIDTH-1:0] src_fbits;
 reg [`MSG_LENGTH_WIDTH-1:0] msg_length;
 reg [`MSG_TYPE_WIDTH-1:0] msg_type;
-reg [`MSG_MSHRID_WIDTH-1:0] msg_mshrid;
+reg [`MSG_MSHRID_WIDTH-1:0] msg_mshr_type;
 reg [`MSG_MESI_BITS-1:0] msg_mesi;
 // reg [`MSG_SUBLINE_ID_WIDTH-1:0] msg_subline_id;
 reg [`MSG_LAST_SUBLINE_WIDTH-1:0] msg_last_subline;
@@ -167,7 +167,7 @@ begin
 
     msg_length = 0;
     msg_type = 0;
-    msg_mshrid = {l15_noc3encoder_req_threadid, l15_noc3encoder_req_mshrid};
+    msg_mshr_type = {l15_noc3encoder_req_threadid, l15_noc3encoder_req_mshr_type};
     msg_mesi = 0;
     // msg_l2_miss = 0;
     // msg_subline_id = 0;
@@ -249,7 +249,7 @@ begin
             flit[`MSG_DST_FBITS] = dest_fbits;
             flit[`MSG_LENGTH] = msg_length;
             flit[`MSG_TYPE] = msg_type;
-            flit[`MSG_MSHRID] = msg_mshrid;
+            flit[`MSG_MSHRID] = msg_mshr_type;
             flit[`MSG_OPTIONS_1] = msg_options_1;
         end
         else if (flit_state == `NOC3_REQ_HEADER_2)
@@ -284,7 +284,7 @@ begin
             flit[`MSG_DST_FBITS] = dest_fbits;
             flit[`MSG_LENGTH] = msg_length;
             flit[`MSG_TYPE] = msg_type;
-            flit[`MSG_MSHRID] = msg_mshrid;
+            flit[`MSG_MSHRID] = msg_mshr_type;
             flit[`MSG_OPTIONS_4] = msg_options_4;
         end
         else if (flit_state == `NOC3_RES_DATA_1)

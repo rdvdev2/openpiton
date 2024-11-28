@@ -58,7 +58,7 @@ module noc2decoder(
     output reg [`DMBR_TAG_WIDTH-1:0] l15_dmbr_l2missTag,
 
     output reg noc2decoder_l15_val,
-    output reg [`L15_MSHR_ID_WIDTH-1:0] noc2decoder_l15_mshrid,
+    output reg [`L15_MSHR_TYPE_WIDTH-1:0] noc2decoder_l15_mshr_type,
     output reg [`L15_THREADID_MASK] noc2decoder_l15_threadid,
     output reg noc2decoder_l15_hmc_fill,
     output reg noc2decoder_l15_l2miss,
@@ -72,7 +72,7 @@ module noc2decoder(
     output reg [63:0] noc2decoder_l15_data_3,
     output reg [39:0] noc2decoder_l15_address,
     output reg [3:0] noc2decoder_l15_fwd_subcacheline_vector,
-    output reg [`L15_CSM_NUM_TICKETS_LOG2-1:0] noc2decoder_l15_csm_mshrid,
+    output reg [`L15_CSM_NUM_TICKETS_LOG2-1:0] noc2decoder_l15_csm_mshr_type,
     output reg [`PACKET_HOME_ID_WIDTH-1:0] noc2decoder_l15_src_homeid
     );
 
@@ -87,7 +87,7 @@ begin
       is_message_new <= is_message_new_next;
 end
 
-reg [`MSG_MSHRID_WIDTH-1:0] noc2_mshrid;
+reg [`MSG_MSHRID_WIDTH-1:0] noc2_mshr_type;
 reg [`MSG_LENGTH_WIDTH-1:0] msg_len;
 always @ *
 begin
@@ -98,12 +98,12 @@ begin
     noc2decoder_l15_reqtype = noc2_data[`MSG_TYPE];
     msg_len = noc2_data[`MSG_LENGTH];
     
-    noc2_mshrid = noc2_data[`MSG_MSHRID];
-    noc2decoder_l15_mshrid = noc2_mshrid[`L15_MSHR_ID_WIDTH-1:0];
-    noc2decoder_l15_csm_mshrid = noc2_mshrid[`L15_CSM_NUM_TICKETS_LOG2-1:0];
-    // the threadid is encoded in the mshrid sent to L2, is the next L15_THREADID_WIDTH bits after the first L15_MSHR_ID_WIDTH bits
-    noc2decoder_l15_threadid = noc2_mshrid[`L15_MSHR_ID_WIDTH+`L15_THREADID_WIDTH -1 -: `L15_THREADID_WIDTH];
-    noc2decoder_l15_hmc_fill = noc2_mshrid[`MSG_MSHRID_WIDTH-1];
+    noc2_mshr_type = noc2_data[`MSG_MSHRID];
+    noc2decoder_l15_mshr_type = noc2_mshr_type[`L15_MSHR_TYPE_WIDTH-1:0];
+    noc2decoder_l15_csm_mshr_type = noc2_mshr_type[`L15_CSM_NUM_TICKETS_LOG2-1:0];
+    // the threadid is encoded in the mshr_type sent to L2, is the next L15_THREADID_WIDTH bits after the first L15_MSHR_TYPE_WIDTH bits
+    noc2decoder_l15_threadid = noc2_mshr_type[`L15_MSHR_TYPE_WIDTH+`L15_THREADID_WIDTH -1 -: `L15_THREADID_WIDTH];
+    noc2decoder_l15_hmc_fill = noc2_mshr_type[`MSG_MSHRID_WIDTH-1];
 
     noc2decoder_l15_l2miss = noc2_data[`MSG_L2_MISS];
     noc2decoder_l15_icache_type = noc2_data[`MSG_CACHE_TYPE];
@@ -141,10 +141,10 @@ end
 // fix timing for dmbr by putting flops on the response
 reg dmbr_response_val_next;
 reg dmbr_l2_miss_next;
-reg [`DMBR_TAG_WIDTH-1:0]dmbr_l2_miss_mshrid_next;
+reg [`DMBR_TAG_WIDTH-1:0]dmbr_l2_miss_mshr_type_next;
 reg dmbr_response_val;
 reg dmbr_l2_miss;
-reg [`DMBR_TAG_WIDTH-1:0]dmbr_l2_miss_mshrid;
+reg [`DMBR_TAG_WIDTH-1:0]dmbr_l2_miss_mshr_type;
 
 always @ (posedge clk)
 begin
@@ -152,13 +152,13 @@ begin
     begin
         dmbr_response_val = 0;
         dmbr_l2_miss = 0;
-        dmbr_l2_miss_mshrid = 0;
+        dmbr_l2_miss_mshr_type = 0;
     end
     else
     begin
         dmbr_response_val = dmbr_response_val_next;
         dmbr_l2_miss = dmbr_l2_miss_next;
-        dmbr_l2_miss_mshrid = dmbr_l2_miss_mshrid_next;
+        dmbr_l2_miss_mshr_type = dmbr_l2_miss_mshr_type_next;
     end
 end
 
@@ -168,20 +168,20 @@ begin
     // dmbr hook
     dmbr_response_val_next = 0;
     dmbr_l2_miss_next = 0;
-    dmbr_l2_miss_mshrid_next = 0;
+    dmbr_l2_miss_mshr_type_next = 0;
     if (l15_noc2decoder_ack)
     begin
         if (noc2decoder_l15_reqtype == `MSG_TYPE_DATA_ACK)
         begin
             dmbr_response_val_next = 1'b1;
             dmbr_l2_miss_next = noc2decoder_l15_l2miss;
-            dmbr_l2_miss_mshrid_next = {1'b0, noc2decoder_l15_threadid, noc2decoder_l15_mshrid};
+            dmbr_l2_miss_mshr_type_next = {1'b0, noc2decoder_l15_threadid, noc2decoder_l15_mshr_type};
         end
     end
 
     l15_dmbr_l2responseIn = dmbr_response_val;
     l15_dmbr_l2missIn = dmbr_l2_miss;
-    l15_dmbr_l2missTag = dmbr_l2_miss_mshrid;
+    l15_dmbr_l2missTag = dmbr_l2_miss_mshr_type;
 end
 
 
