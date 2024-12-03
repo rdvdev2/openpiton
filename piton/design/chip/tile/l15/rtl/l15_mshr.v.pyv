@@ -363,8 +363,8 @@ begin
     begin
         for(i = 0; i < `L15_NUM_THREADS; i = i+1)
         begin
-            st_homeid[i] <= {PACKET_HOME_ID_WIDTH{1'b0}};
-            ld_homeid[i] <= {PACKET_HOME_ID_WIDTH{1'b0}};
+            st_homeid[i] <= {`PACKET_HOME_ID_WIDTH{1'b0}};
+            ld_homeid[i] <= {`PACKET_HOME_ID_WIDTH{1'b0}};
         end
     end
     else
