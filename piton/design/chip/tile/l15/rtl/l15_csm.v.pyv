@@ -81,7 +81,7 @@ module l15_csm(
    input wire noc1encoder_csm_req_ack,
    output wire csm_noc1encoder_req_val,
    output wire [`L15_NOC1_REQTYPE_WIDTH-1:0] csm_noc1encoder_req_type,
-   output wire [`L15_CSM_NUM_TICKETS_LOG2-1:0] csm_noc1encoder_req_mshrid,
+   output wire [`L15_CSM_NUM_TICKETS_LOG2-1:0] csm_noc1encoder_req_mshr_type,
    output wire [`PHY_ADDR_WIDTH-1:0] csm_noc1encoder_req_address,
    output wire csm_noc1encoder_req_non_cacheable,
    output wire  [`PCX_SIZE_WIDTH-1:0] csm_noc1encoder_req_size
@@ -657,7 +657,7 @@ end
 
 assign csm_noc1encoder_req_val = refill_req_val_buf[refill_req_buf_rd_ptr] && (refill_req_buf_counter > 0);
 assign csm_noc1encoder_req_type = `L15_NOC1_REQTYPE_LD_REQUEST;
-assign csm_noc1encoder_req_mshrid = refill_req_ticket_buf[refill_req_buf_rd_ptr];
+assign csm_noc1encoder_req_mshr_type = refill_req_ticket_buf[refill_req_buf_rd_ptr];
 assign csm_noc1encoder_req_address = refill_req_addr_buf[refill_req_buf_rd_ptr];
 assign csm_noc1encoder_req_non_cacheable = 1'b1;
 assign csm_noc1encoder_req_size = `MSG_DATA_SIZE_16B; 
@@ -679,7 +679,7 @@ end
 
 assign csm_noc1encoder_req_val = 0;
 assign csm_noc1encoder_req_type = 0;
-assign csm_noc1encoder_req_mshrid =0;
+assign csm_noc1encoder_req_mshr_type =0;
 assign csm_noc1encoder_req_address =0;
 assign csm_noc1encoder_req_non_cacheable = 0;
 assign csm_noc1encoder_req_size = 0;

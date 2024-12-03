@@ -351,7 +351,7 @@ reg [`L15_CACHE_TAG_WIDTH-1:0] tag_data_TILE0 [0:3];
 reg [3:0] tag_val_TILE0;
 reg [`L15_WMT_ENTRY_MASK] wmt_read_data_TILE0 [0:3];
 integer j_TILE0;
-reg is_csm_mshrid_TILE0;
+reg is_csm_mshr_type_TILE0;
 
 reg wmt_read_val_s3_TILE0;
 always @ (posedge clk)
@@ -476,8 +476,8 @@ begin
         endcase
 
         $write("%0d TILE0 L1.5: Received NOC2 %s", $time, noc2);
-        $display("   mshrid %d, l2miss %d, f4b %d, ackstate %d, address 0x%x",
-                    `L15_PIPE0.noc2decoder_l15_mshrid, `L15_PIPE0.noc2decoder_l15_l2miss, `L15_PIPE0.noc2decoder_l15_f4b,
+        $display("   mshr_type %d, l2miss %d, f4b %d, ackstate %d, address 0x%x",
+                    `L15_PIPE0.noc2decoder_l15_mshr_type, `L15_PIPE0.noc2decoder_l15_l2miss, `L15_PIPE0.noc2decoder_l15_f4b,
                     `L15_PIPE0.noc2decoder_l15_ack_state, `L15_PIPE0.noc2decoder_l15_address);
         $display("   Data1: 0x%x", `L15_PIPE0.noc2decoder_l15_data_0);
         $display("   Data2: 0x%x", `L15_PIPE0.noc2decoder_l15_data_1);
@@ -583,8 +583,8 @@ begin
         endcase
 
         $write("%0d TILE0 L1.5: Sending NOC1 %s", $time, noc1);
-        $display("   mshrid %d, nc %d, size %d, pf %d, address %0x",
-                    `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_mshrid, `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_non_cacheable,
+        $display("   mshr_type %d, nc %d, size %d, pf %d, address %0x",
+                    `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_mshr_type, `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_non_cacheable,
                     `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_size, `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_prefetch, `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_address);
         $display("   Data0: 0x%x", `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_data_0);
         $display("   Data1: 0x%x", `L15_TOP0.noc1encoder.noc1buffer_noc1encoder_req_data_1);
@@ -621,8 +621,8 @@ begin
 
 
         $write("%0d TILE0 L1.5: Sent NOC3 %s", $time, noc3);
-        $display("   mshrid %d, seqid %d, address %0x",
-                    `L15_TOP0.noc3encoder.l15_noc3encoder_req_mshrid, `L15_TOP0.noc3encoder.l15_noc3encoder_req_sequenceid, `L15_TOP0.noc3encoder.l15_noc3encoder_req_address);
+        $display("   mshr_type %d, seqid %d, address %0x",
+                    `L15_TOP0.noc3encoder.l15_noc3encoder_req_mshr_type, `L15_TOP0.noc3encoder.l15_noc3encoder_req_sequenceid, `L15_TOP0.noc3encoder.l15_noc3encoder_req_address);
         $display("   srcX: %d, srcY: %d", `L15_TOP0.noc3encoder.src_l2_xpos, `L15_TOP0.noc3encoder.src_l2_ypos);
         $display("   destX: %d, destY: %d", `L15_TOP0.noc3encoder.dest_l2_xpos, `L15_TOP0.noc3encoder.dest_l2_ypos);
         $display("   Data0: 0x%x", `L15_TOP0.noc3encoder.l15_noc3encoder_req_data_0);
@@ -640,8 +640,8 @@ begin
         // $display("NoC1 r down: %d", `L15_PIPE0.creditman_noc1_reserve_minus1);
         // $display("NoC1 r up: %d", `L15_PIPE0.creditman_noc1_reserve_add1);
 
-        // monitor the MSHRID allocation
-        // $display("MSHRID allocation info:");
+        // monitor the MSHR_TYPE allocation
+        // $display("MSHR_TYPE allocation info:");
         // for (i_TILE0 = 0; i_TILE0 < `L15_MSHR_COUNT; i_TILE0 = i_TILE0 + 1)
         //     $write("%d:%d", i_TILE0, `L15_PIPE0.mshr_val_array[i_TILE0]);
             // $write("%d %d", i_TILE0, i_TILE0);
@@ -743,12 +743,12 @@ begin
             //     if (`L15_PIPE0.s1_mshr_write_type_s1 == `L15_MSHR_WRITE_TYPE_ALLOCATION)
             //     begin
             //         $write ("L15_MSHR_WRITE_TYPE_ALLOCATION");
-            //         $display ("      MSRID: %d", `L15_PIPE0.s1_mshr_write_mshrid_s1);
+            //         $display ("      MSRID: %d", `L15_PIPE0.s1_mshr_write_mshr_type_s1);
             //     end
             //     else if (`L15_PIPE0.s1_mshr_write_type_s1 == `L15_S1_MSHR_OP_UPDATE_WRITECACHE)
             //     begin
             //         $write ("L15_S1_MSHR_OP_UPDATE_WRITECACHE");
-            //         $display ("      MSRID:     %d", `L15_PIPE0.s1_mshr_write_mshrid_s1);
+            //         $display ("      MSRID:     %d", `L15_PIPE0.s1_mshr_write_mshr_type_s1);
             //         $display ("      DATA:      0x%x", `L15_PIPE0.s1_mshr_write_data);
             //         $display ("      DATAMASK:  0x%x", `L15_PIPE0.s1_mshr_write_byte_mask);
             //     end
@@ -818,7 +818,7 @@ begin
             // if (`L15_PIPE0.s2_mshr_val_s2)
             // begin
             //     $display("   MSHR OP: L15_S2_MSHR_OP_READ_WRITE_CACHE");
-            //     $display ("      MSHR: %d", `L15_PIPE0.s2_mshr_read_mshrid);
+            //     $display ("      MSHR: %d", `L15_PIPE0.s2_mshr_read_mshr_type);
             // end
             if (`L15_PIPE0.dcache_val_s2)
             begin
@@ -909,7 +909,7 @@ begin
             // if (`L15_PIPE0.s3_mshr_val_s3)
             // begin
             //     $write("   MSHR OP: "); decode_s3mshr_op(`L15_PIPE0.s3_mshr_operation_s3);
-            //     $display ("      MSHR:      %d", `L15_PIPE0.s3_mshr_write_mshrid);
+            //     $display ("      MSHR:      %d", `L15_PIPE0.s3_mshr_write_mshr_type);
             //     $display ("      U.State:      0x%x", `L15_PIPE0.s3_mshr_write_update_state);
             //     $display ("      U.Way:  0x%x", `L15_PIPE0.s3_mshr_write_update_way);
             //     $display ("      St.mshr rand hit:   %d", `L15_PIPE0.LRU_st1_mshr_s3 || `L15_PIPE0.LRU_st2_mshr_s3);
@@ -968,7 +968,7 @@ begin
         $display($time, ": TILE0 L15_CSM NOC1 REQ MON:");
         $display("L15 CSM noc1 req addr: 0x%x", `L15_TOP0.l15_csm.csm_noc1encoder_req_address);
         $display("L15 CSM noc1 req type: %d", `L15_TOP0.l15_csm.csm_noc1encoder_req_type);
-        $display("L15 CSM noc1 req mshrid: %d", `L15_TOP0.l15_csm.csm_noc1encoder_req_mshrid);
+        $display("L15 CSM noc1 req mshr_type: %d", `L15_TOP0.l15_csm.csm_noc1encoder_req_mshr_type);
     end
     if(`L15_TOP0.l15_csm.noc1encoder_csm_req_ack)
     begin
@@ -986,36 +986,36 @@ begin
             `MONITOR_PATH.fail("L1.5 MON: HMC refills invalid data");
     end
 
-// valid mshrid monitor
+// valid mshr_type monitor
     // check for incoming messages
     if (`L15_PIPE0.noc2decoder_l15_val && `L15_PIPE0.val_s1 && !`L15_PIPE0.stall_s1)
     begin
-        is_csm_mshrid_TILE0 = `L15_PIPE0.noc2decoder_l15_hmc_fill;
+        is_csm_mshr_type_TILE0 = `L15_PIPE0.noc2decoder_l15_hmc_fill;
         if ((`L15_PIPE0.noc2decoder_l15_reqtype == `MSG_TYPE_NODATA_ACK ||
             `L15_PIPE0.noc2decoder_l15_reqtype == `MSG_TYPE_DATA_ACK)
-            && !is_csm_mshrid_TILE0)
+            && !is_csm_mshr_type_TILE0)
         begin
-            // first check if mshrid is in range
-            if (`L15_PIPE0.noc2decoder_l15_mshrid > 9)
+            // first check if mshr_type is in range
+            if (`L15_PIPE0.noc2decoder_l15_mshr_type > 9)
             begin
-                $display("L1.5 MON: Received NoC2 message with MSHRID greater than 9 (%d)", `L15_PIPE0.noc2decoder_l15_mshrid);
-                $display("%d : Simulation -> FAIL(%0s)", $time, "L1.5 MON: Received NoC2 message with MSHRID greater than 9");
+                $display("L1.5 MON: Received NoC2 message with MSHR_TYPE greater than 9 (%d)", `L15_PIPE0.noc2decoder_l15_mshr_type);
+                $display("%d : Simulation -> FAIL(%0s)", $time, "L1.5 MON: Received NoC2 message with MSHR_TYPE greater than 9");
                 `ifndef VERILATOR
                 repeat(5)@(posedge clk)
                 `endif
-                    `MONITOR_PATH.fail("L1.5 MON: Received NoC2 message with MSHRID greater than 9");
+                    `MONITOR_PATH.fail("L1.5 MON: Received NoC2 message with MSHR_TYPE greater than 9");
             end
 
             // now check if it's valid
             // TODO
-            // if (`L15_TOP0.mshr.val_array[`L15_PIPE0.noc2decoder_l15_mshrid] != 1'b1)
+            // if (`L15_TOP0.mshr.val_array[`L15_PIPE0.noc2decoder_l15_mshr_type] != 1'b1)
             // begin
-            //     $display("L1.5 MON: Received NoC2 message with invalid MSHRID (%d)", `L15_PIPE0.noc2decoder_l15_mshrid);
-            //     $display("%d : Simulation -> FAIL(%0s)", $time, "L1.5 MON: Received NoC2 message with invalid MSHRID");
+            //     $display("L1.5 MON: Received NoC2 message with invalid MSHR_TYPE (%d)", `L15_PIPE0.noc2decoder_l15_mshr_type);
+            //     $display("%d : Simulation -> FAIL(%0s)", $time, "L1.5 MON: Received NoC2 message with invalid MSHR_TYPE");
             //     `ifndef VERILATOR
             //     repeat(5)@(posedge clk)
             //     `endif
-                //     `MONITOR_PATH.fail("L1.5 MON: Received NoC2 message with invalid MSHRID");
+                //     `MONITOR_PATH.fail("L1.5 MON: Received NoC2 message with invalid MSHR_TYPE");
             // end
         end
     end
@@ -1024,15 +1024,15 @@ begin
     //     if (`L15_PIPE0.l15_noc1buffer_req_type != `L15_NOC1_REQTYPE_WRITEBACK_GUARD
     //         && `L15_PIPE0.l15_noc1buffer_req_type != `L15_NOC1_REQTYPE_INTERRUPT_FWD)
     //     begin
-    //         if (`L15_TOP0.mshr.val_array[`L15_PIPE0.l15_noc1buffer_req_mshrid] != 1'b1
-    //             || `L15_PIPE0.l15_noc1buffer_req_mshrid > 9)
+    //         if (`L15_TOP0.mshr.val_array[`L15_PIPE0.l15_noc1buffer_req_mshr_type] != 1'b1
+    //             || `L15_PIPE0.l15_noc1buffer_req_mshr_type > 9)
     //         begin
-    //             $display("L1.5 MON: Sending NoC1 message with invalid MSHRID (%d)", `L15_PIPE0.l15_noc1buffer_req_mshrid);
-    //             $display("%d : Simulation -> FAIL(%0s)", $time, "L1.5 MON: Sending NoC1 message with invalid MSHRID");
+    //             $display("L1.5 MON: Sending NoC1 message with invalid MSHR_TYPE (%d)", `L15_PIPE0.l15_noc1buffer_req_mshr_type);
+    //             $display("%d : Simulation -> FAIL(%0s)", $time, "L1.5 MON: Sending NoC1 message with invalid MSHR_TYPE");
     //             `ifndef VERILATOR
     //             repeat(5)@(posedge clk)
     //             `endif
-        //             `MONITOR_PATH.fail("L1.5 MON: Sending NoC1 message with invalid MSHRID");
+        //             `MONITOR_PATH.fail("L1.5 MON: Sending NoC1 message with invalid MSHR_TYPE");
     //         end
     //     end
     // end

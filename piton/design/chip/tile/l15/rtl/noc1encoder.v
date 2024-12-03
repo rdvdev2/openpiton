@@ -52,7 +52,7 @@ module noc1encoder(
    input wire [63:0] noc1buffer_noc1encoder_req_data_1,
    input wire noc1buffer_noc1encoder_req_val,
    input wire [`L15_NOC1_REQTYPE_WIDTH-1:0] noc1buffer_noc1encoder_req_type,
-   input wire [`L15_MSHR_ID_WIDTH-1:0] noc1buffer_noc1encoder_req_mshrid,
+   input wire [`L15_MSHR_TYPE_WIDTH-1:0] noc1buffer_noc1encoder_req_mshr_type,
    input wire [`L15_THREADID_MASK] noc1buffer_noc1encoder_req_threadid,
    input wire [39:0] noc1buffer_noc1encoder_req_address,
    input wire noc1buffer_noc1encoder_req_non_cacheable,
@@ -84,7 +84,7 @@ module noc1encoder(
    // csm interface
    input wire csm_noc1encoder_req_val,
    input wire [`L15_NOC1_REQTYPE_WIDTH-1:0] csm_noc1encoder_req_type,
-   input wire [`L15_CSM_NUM_TICKETS_LOG2-1:0] csm_noc1encoder_req_mshrid,
+   input wire [`L15_CSM_NUM_TICKETS_LOG2-1:0] csm_noc1encoder_req_mshr_type,
    input wire [`PHY_ADDR_WIDTH-1:0] csm_noc1encoder_req_address,
    input wire csm_noc1encoder_req_non_cacheable,
    input wire  [`PCX_SIZE_WIDTH-1:0] csm_noc1encoder_req_size,
@@ -195,7 +195,7 @@ begin
       req_data0 = noc1buffer_noc1encoder_req_data_0;
       req_data1 = noc1buffer_noc1encoder_req_data_1;
       req_address = noc1buffer_noc1encoder_req_address;
-      req_mshrid = {noc1buffer_noc1encoder_req_threadid,noc1buffer_noc1encoder_req_mshrid};
+      req_mshrid = {noc1buffer_noc1encoder_req_threadid,noc1buffer_noc1encoder_req_mshr_type};
       req_size = noc1buffer_noc1encoder_req_size;
       req_dest_l2_xpos = noc1buffer_noc1encoder_req_homeid[`PACKET_HOME_ID_X_MASK];
       req_dest_l2_ypos = noc1buffer_noc1encoder_req_homeid[`PACKET_HOME_ID_Y_MASK];
@@ -213,14 +213,14 @@ begin
       req_nc = csm_noc1encoder_req_non_cacheable;
       req_address = csm_noc1encoder_req_address;
       req_size = csm_noc1encoder_req_size;
-      req_mshrid = csm_noc1encoder_req_mshrid;
+      req_mshrid = csm_noc1encoder_req_mshr_type;
 
       // send to home l2
       req_dest_l2_xpos = coreid_x;
       req_dest_l2_ypos = coreid_y;
       req_dest_chipid = chipid;
 
-      // csm mshrid has the most significant bit set
+      // csm mshr_type has the most significant bit set
       req_mshrid = req_mshrid | {1'b1, {`MSG_MSHRID_WIDTH-1{1'b0}}};
    end
 

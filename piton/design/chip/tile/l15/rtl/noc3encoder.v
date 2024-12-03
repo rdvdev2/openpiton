@@ -51,7 +51,7 @@ module noc3encoder(
     input wire [`L15_NOC3_REQTYPE_WIDTH-1:0] l15_noc3encoder_req_type,
     input wire [63:0] l15_noc3encoder_req_data_0,
     input wire [63:0] l15_noc3encoder_req_data_1,
-    input wire [`L15_MSHR_ID_WIDTH-1:0] l15_noc3encoder_req_mshrid,
+    input wire [`L15_MSHR_TYPE_WIDTH-1:0] l15_noc3encoder_req_mshr_type,
     input wire [`L15_THREADID_MASK] l15_noc3encoder_req_threadid,
     input wire [1:0] l15_noc3encoder_req_sequenceid,
     input wire [39:0] l15_noc3encoder_req_address,
@@ -167,7 +167,7 @@ begin
 
     msg_length = 0;
     msg_type = 0;
-    msg_mshrid = {l15_noc3encoder_req_threadid, l15_noc3encoder_req_mshrid};
+    msg_mshrid = {l15_noc3encoder_req_threadid, l15_noc3encoder_req_mshr_type};
     msg_mesi = 0;
     // msg_l2_miss = 0;
     // msg_subline_id = 0;
