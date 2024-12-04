@@ -482,21 +482,19 @@ wire [`L15_CONTROL_WIDTH-1:0] pipe_mshr_writereq_control_s1;
 wire [`L15_MSHR_TYPE_WIDTH-1:0] pipe_mshr_writereq_mshr_type_s1;
 wire [`L15_THREADID_MASK] pipe_mshr_writereq_threadid_s1;
 wire [`L15_THREADID_MASK] pipe_mshr_readreq_threadid_s1;
-wire [`L15_MSHR_TYPE_WIDTH-1:0] pipe_mshr_readreq_mshr_type_s1;
 wire [`L15_CONTROL_WIDTH-1:0] mshr_pipe_readres_control_s1;
 wire [`PACKET_HOME_ID_WIDTH-1:0] mshr_pipe_readres_homeid_s1;
 wire [(`L15_NUM_MSHR_TYPE_PER_THREAD*`L15_NUM_THREADS)-1:0] mshr_pipe_vals_s1;
-wire [(40*`L15_NUM_THREADS)-1:0] mshr_pipe_ld_address;
-wire [(40*`L15_NUM_THREADS)-1:0] mshr_pipe_st_address;
-wire [(2*`L15_NUM_THREADS)-1:0] mshr_pipe_st_way_s1;
-wire [(`L15_MESI_TRANS_STATE_WIDTH*`L15_NUM_THREADS)-1:0] mshr_pipe_st_state_s1;
+wire [(`L15_MSHR_TYPE_WIDTH*`L15_NUM_THREADS)-1:0] mshr_pipe_type_s1;
+wire [(40*`L15_NUM_THREADS)-1:0] mshr_pipe_address;
+wire [(2*`L15_NUM_THREADS)-1:0] mshr_pipe_way_s1;
+wire [(`L15_MESI_TRANS_STATE_WIDTH*`L15_NUM_THREADS)-1:0] mshr_pipe_state_s1;
 wire pipe_mshr_write_buffer_rd_en_s2;
 wire [`L15_THREADID_MASK] pipe_mshr_threadid_s2;
 wire [127:0]mshr_pipe_write_buffer_s2;
 wire [15:0] mshr_pipe_write_buffer_byte_mask_s2;
 wire pipe_mshr_val_s3;
 wire [`L15_MSHR_WRITE_TYPE_WIDTH-1:0] pipe_mshr_op_s3;
-wire [`L15_MSHR_TYPE_WIDTH-1:0] pipe_mshr_mshr_type_s3;
 wire [`L15_THREADID_MASK] pipe_mshr_threadid_s3;
 wire [`L15_MESI_TRANS_STATE_WIDTH-1:0] pipe_mshr_write_update_state_s3;
 wire [1:0] pipe_mshr_write_update_way_s3;
@@ -518,21 +516,19 @@ l15_mshr mshr(
     .pipe_mshr_writereq_mshr_type_s1(pipe_mshr_writereq_mshr_type_s1),
     .pipe_mshr_writereq_threadid_s1(pipe_mshr_writereq_threadid_s1),
     .pipe_mshr_readreq_threadid_s1(pipe_mshr_readreq_threadid_s1),
-    .pipe_mshr_readreq_mshr_type_s1(pipe_mshr_readreq_mshr_type_s1),
     .mshr_pipe_readres_control_s1(mshr_pipe_readres_control_s1),
     .mshr_pipe_readres_homeid_s1(mshr_pipe_readres_homeid_s1),
     .mshr_pipe_vals_s1(mshr_pipe_vals_s1),
-    .mshr_pipe_ld_address(mshr_pipe_ld_address),
-    .mshr_pipe_st_address(mshr_pipe_st_address),
-    .mshr_pipe_st_way_s1(mshr_pipe_st_way_s1),
-    .mshr_pipe_st_state_s1(mshr_pipe_st_state_s1),
+    .mshr_pipe_type_s1(mshr_pipe_type_s1),
+    .mshr_pipe_address(mshr_pipe_address),
+    .mshr_pipe_way_s1(mshr_pipe_way_s1),
+    .mshr_pipe_state_s1(mshr_pipe_state_s1),
     .pipe_mshr_write_buffer_rd_en_s2(pipe_mshr_write_buffer_rd_en_s2),
     .pipe_mshr_threadid_s2(pipe_mshr_threadid_s2),
     .mshr_pipe_write_buffer_s2(mshr_pipe_write_buffer_s2),
     .mshr_pipe_write_buffer_byte_mask_s2(mshr_pipe_write_buffer_byte_mask_s2),
     .pipe_mshr_val_s3(pipe_mshr_val_s3),
     .pipe_mshr_op_s3(pipe_mshr_op_s3),
-    .pipe_mshr_mshr_type_s3(pipe_mshr_mshr_type_s3),
     .pipe_mshr_threadid_s3(pipe_mshr_threadid_s3),
     .pipe_mshr_write_update_state_s3(pipe_mshr_write_update_state_s3),
     .pipe_mshr_write_update_way_s3(pipe_mshr_write_update_way_s3),
@@ -830,21 +826,19 @@ l15_pipeline pipeline(
     .pipe_mshr_writereq_mshr_type_s1(pipe_mshr_writereq_mshr_type_s1),
     .pipe_mshr_writereq_threadid_s1(pipe_mshr_writereq_threadid_s1),
     .pipe_mshr_readreq_threadid_s1(pipe_mshr_readreq_threadid_s1),
-    .pipe_mshr_readreq_mshr_type_s1(pipe_mshr_readreq_mshr_type_s1),
     .mshr_pipe_readres_control_s1(mshr_pipe_readres_control_s1),
     .mshr_pipe_readres_homeid_s1(mshr_pipe_readres_homeid_s1),
     .mshr_pipe_vals_s1(mshr_pipe_vals_s1),
-    .mshr_pipe_ld_address(mshr_pipe_ld_address),
-    .mshr_pipe_st_address(mshr_pipe_st_address),
-    .mshr_pipe_st_way_s1(mshr_pipe_st_way_s1),
-    .mshr_pipe_st_state_s1(mshr_pipe_st_state_s1),
+    .mshr_pipe_type_s1(mshr_pipe_type_s1),
+    .mshr_pipe_address(mshr_pipe_address),
+    .mshr_pipe_way_s1(mshr_pipe_way_s1),
+    .mshr_pipe_state_s1(mshr_pipe_state_s1),
     .pipe_mshr_write_buffer_rd_en_s2(pipe_mshr_write_buffer_rd_en_s2),
     .pipe_mshr_threadid_s2(pipe_mshr_threadid_s2),
     .mshr_pipe_write_buffer_s2(mshr_pipe_write_buffer_s2),
     .mshr_pipe_write_buffer_byte_mask_s2(mshr_pipe_write_buffer_byte_mask_s2),
     .pipe_mshr_val_s3(pipe_mshr_val_s3),
     .pipe_mshr_op_s3(pipe_mshr_op_s3),
-    .pipe_mshr_mshr_type_s3(pipe_mshr_mshr_type_s3),
     .pipe_mshr_threadid_s3(pipe_mshr_threadid_s3),
     .pipe_mshr_write_update_state_s3(pipe_mshr_write_update_state_s3),
     .pipe_mshr_write_update_way_s3(pipe_mshr_write_update_way_s3)
